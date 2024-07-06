@@ -2,7 +2,7 @@
 
 ## Inicialización
 
-Ejecutar el siguiente comando en el directorio 'gym-core-app'
+Ejecutar el siguiente comando en el directorio `gym-core-app`
 
 ```bash
 docker compose up
