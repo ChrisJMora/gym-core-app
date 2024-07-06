@@ -8,11 +8,11 @@ services:
       POSTGRES_PASSWORD: 6yM*sample
       POSTGRES_DB: gym
     volumes:
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./gym-core-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - backend
 
-  app:
+  api:
     image: chrisjacome2003/gym-core-api:latest
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gym
