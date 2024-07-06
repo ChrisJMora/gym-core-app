@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: chrisjacome2003/gym-core-db:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 6yM*sample
+      POSTGRES_DB: gym
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+
+  app:
+    image: chrisjacome2003/gym-core-api:latest
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/gym
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 6yM*sample
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+networks:
+  backend:
