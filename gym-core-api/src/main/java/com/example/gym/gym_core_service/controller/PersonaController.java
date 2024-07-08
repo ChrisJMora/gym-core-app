@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.gym.gym_core_service.model.Persona;
+import com.example.gym.gym_core_service.dto.PersonaDTO;
 import com.example.gym.gym_core_service.service.PersonaService;
 
 @RestController
@@ -17,8 +17,8 @@ public class PersonaController {
     private PersonaService personaService;
 
     @GetMapping("/personas")
-    ResponseEntity<List<Persona>> getAllPersonas() {
-        List<Persona> personas = personaService.getAllPersonas();
+    ResponseEntity<List<PersonaDTO>> getAllPersonas() {
+        List<PersonaDTO> personas = personaService.getAllPersonas();
         if (personas != null) {
             return ResponseEntity.ok(personas);
         } else {

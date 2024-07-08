@@ -30,11 +30,6 @@ public class Sesion {
     private Miembro miembro;
 
     @OneToOne
-    @JoinColumn(name = "entrenador_id")
-    @JsonIgnore
-    private Entrenador entrenador;
-
-    @OneToOne
     @JoinColumn(name = "evento_id")
     @JsonProperty("evento")
     private Evento evento;

@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.gym.gym_core_service.dto.EmpleadoDTO;
 import com.example.gym.gym_core_service.model.Cargo;
-import com.example.gym.gym_core_service.model.Empleado;
 import com.example.gym.gym_core_service.service.EmpleadoService;
 
 @RestController
@@ -19,8 +19,8 @@ public class EmpleadoController {
     private EmpleadoService empleadoService;
     
     @GetMapping("/empleados")
-    ResponseEntity<List<Empleado>> getAllEmpleados() {
-        List<Empleado> empleados = empleadoService.getAllEmpleados();
+    ResponseEntity<List<EmpleadoDTO>> getAllEmpleados() {
+        List<EmpleadoDTO> empleados = empleadoService.getAllEmpleados();
         if (empleados != null) {
             return ResponseEntity.ok(empleados);
         } else {
@@ -29,8 +29,8 @@ public class EmpleadoController {
     }
 
     @GetMapping("/entrenadores")
-    ResponseEntity<List<Empleado>> getAllEntrenadores() {
-        List<Empleado> entrenadores = empleadoService.findByCargo(Cargo.ENTRENADOR);
+    ResponseEntity<List<EmpleadoDTO>> getAllEntrenadores() {
+        List<EmpleadoDTO> entrenadores = empleadoService.findByCargo(Cargo.ENTRENADOR);
         if (entrenadores != null) {
             return ResponseEntity.ok(entrenadores);
         } else {
@@ -39,8 +39,8 @@ public class EmpleadoController {
     }
 
     @GetMapping("/empleado")
-    ResponseEntity<Empleado> getEmpleadoById(@RequestParam Long id) {
-        Empleado empleado = empleadoService.getEmpleadoById(id);
+    ResponseEntity<EmpleadoDTO> getEmpleadoById(@RequestParam Long id) {
+        EmpleadoDTO empleado = empleadoService.getEmpleadoById(id);
         if (empleado != null) {
             return ResponseEntity.ok(empleado);
         } else {
@@ -49,8 +49,8 @@ public class EmpleadoController {
     }
 
     @GetMapping("/entrenador")
-    ResponseEntity<Empleado> getEntrenadorById(@RequestParam Long id) {
-        Empleado empleado = empleadoService.getEntrenadorById(id);
+    ResponseEntity<EmpleadoDTO> getEntrenadorById(@RequestParam Long id) {
+        EmpleadoDTO empleado = empleadoService.getEntrenadorById(id);
         if (empleado != null) {
             return ResponseEntity.ok(empleado);
         } else {

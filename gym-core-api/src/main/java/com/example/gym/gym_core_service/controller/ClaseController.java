@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.gym.gym_core_service.model.Clase;
+import com.example.gym.gym_core_service.dto.ClaseDTO;
 import com.example.gym.gym_core_service.service.ClaseService;
 
 @RestController
@@ -18,8 +18,8 @@ public class ClaseController {
     private ClaseService claseService;
     
     @GetMapping("/clases/entrenador")
-    ResponseEntity<List<Clase>> getAllClasesByEntrenador(@RequestParam long id) {
-        List<Clase> clases = claseService.getAllClasesByEntrenador(id);
+    ResponseEntity<List<ClaseDTO>> getAllClasesByEntrenador(@RequestParam long id) {
+        List<ClaseDTO> clases = claseService.getAllClasesByEntrenador(id);
         if (clases != null) {
             return ResponseEntity.ok(clases);
         } else {
