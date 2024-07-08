@@ -11,6 +11,7 @@ public class MiembroUtil {
     public static MiembroDTO convertToDTO(Miembro miembro) {
         MiembroDTO dto = new MiembroDTO();
         Persona informacionPersonal = miembro.getInformacionPersonal();
+        dto.setId(miembro.getId());
         dto.setCedulaIdentidad(informacionPersonal.getCedulaIdentidad());
         dto.setNombreCompleto(informacionPersonal.getNombres() + " " + informacionPersonal.getApellidos());
         dto.setExperiencia(miembro.getExperiencia());

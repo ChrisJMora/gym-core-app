@@ -12,6 +12,7 @@ public class EmpleadoUtil {
     public static EmpleadoDTO convertToDTO(Empleado empleado) {
         EmpleadoDTO dto = new EmpleadoDTO();
         Persona informacionPersonal = empleado.getInformacionPersonal();
+        dto.setId(empleado.getId());
         dto.setCedulaIdentidad(informacionPersonal.getCedulaIdentidad());
         dto.setNombreCompleto(informacionPersonal.getNombres() + " " + informacionPersonal.getApellidos());
         dto.setCargo(empleado.getCargo());

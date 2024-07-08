@@ -5,10 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.gym.gym_core_service.dto.MiembroDTO;
+import com.example.gym.gym_core_service.dto.PutMiembroDTO;
 import com.example.gym.gym_core_service.service.MiembroService;
 
 @RestController
@@ -32,6 +35,16 @@ public class MiembroController {
         List<MiembroDTO> miembros = miembroService.getAllMiembrosByEntrenadorId(id);
         if (miembros != null) {
             return ResponseEntity.ok(miembros);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/miembro")
+    ResponseEntity<MiembroDTO> updateMiembro(@RequestParam long id, @RequestBody PutMiembroDTO miembro) {
+        MiembroDTO miembro_actualizado = miembroService.updateMiembro(id, miembro);
+        if (miembro_actualizado != null) {
+            return ResponseEntity.ok(miembro_actualizado);
         } else {
             return ResponseEntity.notFound().build();
         }

@@ -7,6 +7,8 @@ import lombok.Setter;
 
 @Getter @Setter
 public class EmpleadoDTO {
+    @JsonProperty("id")
+    private long id;
     @JsonProperty("cedula_identidad")
     private int cedulaIdentidad;
     @JsonProperty("nombre_completo")
