@@ -20,3 +20,6 @@ docker compose up
 - `/empleado?id={id}`
 - `/entrenador?id={id}`
 - `/personas`
+- `/clases/entrenador?id={id}`
+- `/sesiones/miembro?id={id}`
+- `/eventos`
