@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.gym.gym_core_service.dto.MiembroDTO;
 import com.example.gym.gym_core_service.dto.PutMiembroDTO;
+import com.example.gym.gym_core_service.service.KafkaProvider;
 import com.example.gym.gym_core_service.service.MiembroService;
 
 @RestController
@@ -19,6 +20,9 @@ public class MiembroController {
     
     @Autowired
     private MiembroService miembroService;
+
+    @Autowired
+    private KafkaProvider kafkaProvider;
 
     @GetMapping("/miembros")
     ResponseEntity<List<MiembroDTO>> getAllMiembros() {
@@ -44,6 +48,7 @@ public class MiembroController {
     ResponseEntity<MiembroDTO> updateMiembro(@RequestParam long id, @RequestBody PutMiembroDTO miembro) {
         MiembroDTO miembro_actualizado = miembroService.updateMiembro(id, miembro);
         if (miembro_actualizado != null) {
+            kafkaProvider.sendMiembro(miembro_actualizado);
             return ResponseEntity.ok(miembro_actualizado);
         } else {
             return ResponseEntity.notFound().build();
