@@ -1,7 +1,8 @@
+-- Active: 1720195981834@@127.0.0.1@5432@gym
 CREATE SCHEMA IF NOT EXISTS personas;
 CREATE SCHEMA IF NOT EXISTS recursos_humanos;
 CREATE SCHEMA IF NOT EXISTS clientes;
-CREATE SCHEMA IF NOT EXISTS actividades;
+CREATE SCHEMA IF NOT EXISTS itinerario;
 
 CREATE TABLE personas.persona(
 	persona_id SERIAL,
@@ -24,6 +25,42 @@ CREATE TABLE recursos_humanos.empleado(
 		CHECK (cargo IN ('Entrenador', 'Administrativo'))
 );
 
+CREATE TABLE itinerario.actividad(
+	actividad_id SERIAL,
+	nombre VARCHAR(50) NOT NULL,
+	descripcion TEXT,
+	PRIMARY KEY(actividad_id)
+);
+
+CREATE TABLE itinerario.evento(
+	evento_id SERIAL,
+	hora_inicio TIME NOT NULL,
+	hora_fin TIME NOT NULL,
+	dia VARCHAR(10) NOT NULL,
+	PRIMARY KEY(evento_id),
+	CONSTRAINT hora_check
+		CHECK (hora_inicio < hora_fin),
+	CONSTRAINT dia_check
+		CHECK (dia IN ('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'))
+)
+
+CREATE TABLE itinerario.clase(
+	clase_id SERIAL,
+	entrenador_id INT,
+	actividad_id INT,
+	evento_id INT,
+	PRIMARY KEY(clase_id),
+	CONSTRAINT fk_entrenador
+		FOREIGN KEY(entrenador_id)
+			REFERENCES recursos_humanos.empleado(empleado_id),
+	CONSTRAINT fk_actividad
+		FOREIGN KEY(actividad_id)
+			REFERENCES itinerario.actividad(actividad_id),
+	CONSTRAINT fk_evento
+		FOREIGN KEY(evento_id)
+			REFERENCES itinerario.evento(evento_id)
+);
+
 CREATE TABLE clientes.miembro(
 	miembro_id SERIAL,
 	persona_id INT,
@@ -42,11 +79,21 @@ CREATE TABLE clientes.miembro(
 		CHECK (experiencia IN ('Principiante', 'Intermedio', 'Avanzado'))
 );
 
-CREATE TABLE actividades.actividad(
-	actividad_id SERIAL,
-	nombre VARCHAR(50) NOT NULL,
-	descripcion TEXT,
-	PRIMARY KEY(actividad_id)
+CREATE TABLE itinerario.sesion(
+	sesion_id SERIAL,
+	miembro_id INT,
+	entrenador_id INT,
+	evento_id INT,
+	PRIMARY KEY(sesion_id),
+	CONSTRAINT fk_miembro
+		FOREIGN KEY(miembro_id)
+			REFERENCES clientes.miembro(miembro_id),
+	CONSTRAINT fk_entrenador
+		FOREIGN KEY(entrenador_id)
+			REFERENCES recursos_humanos.empleado(empleado_id),
+	CONSTRAINT fk_evento
+		FOREIGN KEY(evento_id)
+			REFERENCES itinerario.evento(evento_id)
 );
 
 INSERT INTO personas.persona (persona_id, cedula_identidad, nombres, apellidos, fecha_nacimiento)
@@ -81,6 +128,83 @@ VALUES
 	(5, 4,	'Administrativo'),
 	(6, 5,	'Administrativo');
 	
+INSERT INTO itinerario.actividad (actividad_id, nombre, descripcion)
+VALUES
+	(1,		'Crossfit',		'Actividad de alta intensidad que combina ejercicios de fuerza y resistencia.'),
+	(2,		'Zumba',		'Actividad de baile que combina ritmos latinos y ejercicios aeróbicos.'),
+	(3,		'Pilates',		'Actividad de bajo impacto que combina ejercicios de fuerza y flexibilidad.'),
+	(4,		'Yoga',			'Actividad de meditación y relajación que combina ejercicios de flexibilidad y equilibrio.'),
+	(5,		'Box',			'Actividad de combate que combina ejercicios de fuerza y resistencia.');
+
+INSERT INTO itinerario.evento (evento_id, hora_inicio, hora_fin, dia)
+VALUES
+	(1,		'08:00:00', '10:00:00', 'Martes'),  	-- Entrenador 1
+	(2,		'12:00:00', '14:00:00', 'Sábado'),		-- Entrenador 1
+	(3,		'16:00:00', '18:00:00', 'Martes'), 		-- Entrenador 2
+	(4,		'20:00:00', '22:00:00', 'Sábado'),		-- Entrenador 2
+	(5,		'08:00:00', '09:00:00', 'Miércoles'),	-- Entrenador 3
+	(6,		'09:00:00', '10:00:00', 'Miércoles'),	-- Entrenador 3
+	(7,		'09:00:00', '11:00:00', 'Jueves'),		-- Entrenador 3
+	(8,		'06:00:00', '08:00:00', 'Lunes'),		-- Entrenador 1 - Miembro 1
+	(9,		'06:00:00', '08:00:00', 'Miércoles'),	-- Entrenador 1 - Miembro 1
+	(10,	'06:00:00', '08:00:00', 'Viernes'),		-- Entrenador 1 - Miembro 1
+	(11,	'06:00:00', '07:00:00', 'Sábado'),		-- Entrenador 1 - Miembro 1
+	(12,	'10:00:00', '12:00:00', 'Lunes'),		-- Entrenador 1 - Miembro 2
+	(13,	'10:00:00', '12:00:00', 'Miércoles'),	-- Entrenador 1 - Miembro 2
+	(14,	'10:00:00', '12:00:00', 'Viernes'),		-- Entrenador 1 - Miembro 2
+	(15,	'07:00:00', '08:00:00', 'Sábado'),		-- Entrenador 1 - Miembro 2
+	(16,	'12:00:00', '14:00:00', 'Lunes'),		-- Entrenador 1 - Miembro 3
+	(17,	'12:00:00', '14:00:00', 'Miércoles'),	-- Entrenador 1 - Miembro 3
+	(18,	'12:00:00', '14:00:00', 'Viernes'),		-- Entrenador 1 - Miembro 3
+	(19,	'08:00:00', '09:00:00', 'Sábado'),		-- Entrenador 1 - Miembro 3
+	(20,	'06:00:00', '08:00:00', 'Martes'),		-- Entrenador 1 - Miembro 4
+	(21,	'08:00:00', '10:00:00', 'Miércoles'),	-- Entrenador 1 - Miembro 4
+	(22,	'06:00:00', '08:00:00',	'Jueves'),		-- Entrenador 1 - Miembro 4
+	(23,	'09:00:00',	'10:00:00',	'Sábado'),		-- Entrenador 1 - Miembro 4
+	(24,	'08:00:00', '10:00:00', 'Martes'),		-- Entrenador 1 - Miembro 5
+	(25,	'08:00:00', '10:00:00',	'Jueves'),		-- Entrenador 1 - Miembro 5
+	(26,	'08:00:00', '10:00:00', 'Viernes'),		-- Entrenador 1 - Miembro 5
+	(27,	'10:00:00',	'11:00:00',	'Sábado'),		-- Entrenador 1 - Miembro 5
+	(30,	'08:00:00', '10:00:00', 'Lunes'),		-- Entrenador 1 - Miembro 6
+	(28,	'10:00:00', '12:00:00', 'Martes'),		-- Entrenador 1 - Miembro 6
+	(29,	'10:00:00', '12:00:00',	'Jueves'),		-- Entrenador 1 - Miembro 6
+	(31,	'11:00:00',	'12:00:00',	'Sábado'),		-- Entrenador 1 - Miembro 6
+	(32,	'14:00:00', '16:00:00', 'Lunes'),		-- Entrenador 2 - Miembro 1
+	(33,	'14:00:00', '16:00:00', 'Miércoles'),	-- Entrenador 2 - Miembro 1
+	(34,	'14:00:00', '16:00:00', 'Viernes'),		-- Entrenador 2 - Miembro 1
+	(35,	'14:00:00', '15:00:00', 'Sábado'),		-- Entrenador 2 - Miembro 1
+	(36,	'18:00:00', '20:00:00', 'Lunes'),		-- Entrenador 2 - Miembro 2
+	(37,	'18:00:00', '20:00:00', 'Miércoles'),	-- Entrenador 2 - Miembro 2
+	(38,	'18:00:00', '20:00:00', 'Viernes'),		-- Entrenador 2 - Miembro 2
+	(39,	'15:00:00', '16:00:00', 'Sábado'),		-- Entrenador 2 - Miembro 2
+	(40,	'20:00:00', '22:00:00', 'Lunes'),		-- Entrenador 2 - Miembro 3
+	(41,	'20:00:00', '22:00:00', 'Miércoles'),	-- Entrenador 2 - Miembro 3
+	(42,	'20:00:00', '22:00:00', 'Viernes'),		-- Entrenador 2 - Miembro 3
+	(43,	'16:00:00', '17:00:00', 'Sábado'),		-- Entrenador 2 - Miembro 3
+	(44,	'14:00:00', '16:00:00', 'Martes'),		-- Entrenador 2 - Miembro 4
+	(45,	'16:00:00', '18:00:00', 'Miércoles'),	-- Entrenador 2 - Miembro 4
+	(46,	'14:00:00', '16:00:00',	'Jueves'),		-- Entrenador 2 - Miembro 4
+	(47,	'17:00:00',	'18:00:00',	'Sábado'),		-- Entrenador 2 - Miembro 4
+	(48,	'16:00:00', '18:00:00', 'Martes'),		-- Entrenador 2 - Miembro 5
+	(49,	'16:00:00', '18:00:00',	'Jueves'),		-- Entrenador 2 - Miembro 5
+	(50,	'16:00:00', '18:00:00', 'Viernes'),		-- Entrenador 2 - Miembro 5
+	(51,	'18:00:00',	'19:00:00',	'Sábado'),		-- Entrenador 2 - Miembro 5
+	(52,	'16:00:00', '18:00:00', 'Lunes'),		-- Entrenador 2 - Miembro 6
+	(53,	'18:00:00', '20:00:00', 'Martes'),		-- Entrenador 2 - Miembro 6
+	(54,	'18:00:00', '20:00:00',	'Jueves'),		-- Entrenador 2 - Miembro 6
+	(55,	'19:00:00',	'20:00:00',	'Sábado');		-- Entrenador 2 - Miembro 6
+
+
+INSERT INTO itinerario.clase (clase_id, entrenador_id, actividad_id, evento_id)
+VALUES
+	(1,	1, 1, 1),
+	(2,	1, 5, 2),
+	(3, 2, 1, 3),
+	(4, 2, 5, 4),
+	(5, 3, 2, 5),
+	(6, 3, 3, 6),
+	(7, 3, 4, 7);
+
 INSERT INTO clientes.miembro (miembro_id, persona_id, entrenador_id, experiencia, altura, peso)
 VALUES
 	(1,		1,	1,	'Principiante',	1.70,	70.0),
@@ -98,10 +222,62 @@ VALUES
 	(13,	18,	3,	'Principiante',	1.68,	62.0),
 	(14,	19,	3,	'Principiante',	1.76,	66.6);
 
-INSERT INTO actividades.actividad (actividad_id, nombre, descripcion)
+INSERT INTO itinerario.sesion (sesion_id, miembro_id, entrenador_id, evento_id)
 VALUES
-	(1,		'Crossfit',		'Actividad de alta intensidad que combina ejercicios de fuerza y resistencia.'),
-	(2,		'Zumba',		'Actividad de baile que combina ritmos latinos y ejercicios aeróbicos.'),
-	(3,		'Pilates',		'Actividad de bajo impacto que combina ejercicios de fuerza y flexibilidad.'),
-	(4,		'Yoga',			'Actividad de meditación y relajación que combina ejercicios de flexibilidad y equilibrio.'),
-	(5,		'Box',			'Actividad de combate que combina ejercicios de fuerza y resistencia.');
+	(1,	 1, 1, 8),
+	(2,	 1, 1, 9),
+	(3,	 1, 1, 10),
+	(4,	 1, 1, 11),
+	(5,	 2, 1, 12),
+	(6,	 2, 1, 13),
+	(7,	 2, 1, 14),
+	(8,	 2, 1, 15),
+	(9,	 3, 1, 16),
+	(10, 3, 1, 17),
+	(11, 3, 1, 18),
+	(12, 3, 1, 19),
+	(13, 4, 1, 20),
+	(14, 4, 1, 21),
+	(15, 4, 1, 22),
+	(16, 4, 1, 23),
+	(17, 5, 1, 24),
+	(18, 5, 1, 25),
+	(19, 5, 1, 26),
+	(20, 5, 1, 27),
+	(21, 6, 1, 30),
+	(22, 6, 1, 28),
+	(23, 6, 1, 29),
+	(24, 6, 1, 31),
+	(25, 7, 	2, 32),
+	(26, 7, 	2, 33),
+	(27, 7, 	2, 34),
+	(28, 7, 	2, 35),
+	(29, 8, 	2, 36),
+	(30, 8, 	2, 37),
+	(31, 8, 	2, 38),
+	(32, 8, 	2, 39),
+	(33, 9, 	2, 40),
+	(34, 9, 	2, 41),
+	(35, 9, 	2, 42),
+	(36, 9, 	2, 43),
+	(37, 10, 	2, 44),
+	(38, 10, 	2, 45),
+	(39, 10, 	2, 46),
+	(40, 10, 	2, 47),
+	(41, 11, 	2, 48),
+	(42, 11, 	2, 49),
+	(43, 11, 	2, 50),
+	(44, 11, 	2, 51),
+	(45, 12, 	2, 52),
+	(46, 12, 	2, 53),
+	(47, 12, 	2, 54),
+	(48, 12, 	2, 55),
+	(49, 13, 	3, 8),
+	(50, 13, 	3, 9),
+	(51, 13, 	3, 10),
+	(52, 13, 	3, 11),
+	(53, 14, 	3, 12),
+	(54, 14, 	3, 13),
+	(55, 14, 	3, 14),
+	(56, 14, 	3, 15);
+

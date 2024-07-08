@@ -28,7 +28,7 @@ public class Empleado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "empleado_id")
     @JsonIgnore
-    private Long id;
+    private long id;
 
     @Column(name = "cargo", insertable = false, updatable = false)
     private String cargo;
